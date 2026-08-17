@@ -41,3 +41,10 @@
 - [x] Validar que o merge entre local e remoto preserva o maior progresso e não sobrescreve XP/histórico com dados vazios.
 - [x] Corrigir e testar regras CSS de scroll, incluindo a transição inválida do calendário e camadas de GPU removidas.
 - [x] Capturar verificação visual desktop e mobile após as correções de persistência e scroll.
+- [x] Corrigir o glitch de rolagem da aba Porção removendo scroll horizontal aninhado e overflow/transformações instáveis.
+- [x] Atualizar a base editorial com a diretriz ACSM 2026 e explicitar limites de fontes de fórum.
+- [x] Auditar o ciclo iniciante e avançado para manter volume conservador, dias de recuperação, progressão gradual e cargas ajustáveis.
+- [x] Adicionar testes para a rotina de recuperação, cargas em kg, progressão e linguagem sem promessa de resultado.
+- [x] Validar visualmente a aba Porção em desktop e mobile e executar build/testes antes do checkpoint.
+- [x] Explicitar no app e/ou em research.md que fóruns são insight prático complementar, não base principal de prescrição.
+- [x] Adicionar teste explícito de progressão gradual comparando iniciante e avançado em carga, séries e descanso.

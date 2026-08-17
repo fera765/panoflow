@@ -15253,3 +15253,25 @@ EOF
 
 ### done
 
+
+
+## Auditoria complementar — 17 de agosto de 2026
+
+A consulta complementar confirmou três pontos para a revisão do PanoFlow. O resumo do ACSM de 2026 destaca que consistência e individualização importam mais que complexidade, que os principais grupos podem ser treinados pelo menos duas vezes por semana quando apropriado e que falha muscular e periodização complexa não são obrigatórias para adultos saudáveis [7]. O position stand do ACSM indexado no PubMed recomenda, para iniciantes, uma faixa de aproximadamente 8–12 repetições máximas; para hipertrofia, múltiplas séries e uma faixa comum de 6–12 repetições, com progressão de 2–10% quando a pessoa excede o alvo por uma ou duas repetições, sempre condicionada à capacidade e ao objetivo individual [8].
+
+A discussão pública no Reddit r/Maromba sobre AB versus ABCD mostra uma dúvida real sobre divisão de treino e consistência, mas não prova superioridade universal de uma divisão [9]. Outra discussão pública sobre recomposição corporal expõe dúvidas sobre déficit calórico, proteína, treino e aderência, sem permitir prescrição individual ou garantia de resultado [10].
+
+### Ajustes editoriais derivados
+
+| Ponto | Regra para o PanoFlow |
+|---|---|
+| Treino diário | Dias de treino resistido devem alternar com cardio leve, mobilidade ou recuperação; “diário” não significa musculação pesada sem descanso. |
+| Progressão | A carga em kg permanece inicial e ajustável; aumentar somente com técnica estável, faixa completa e recuperação adequada. |
+| Volume | Evitar multiplicar volume automaticamente; começar conservador e revisar após resposta, dor, fadiga e aderência. |
+| Resultado | Remover linguagem que sugira shape ou peso garantidos; acompanhar tendência de medidas e desempenho ao longo de semanas. |
+| Fóruns | Usar relatos como contexto qualitativo e perguntas frequentes, nunca como substituto de diretrizes ou avaliação profissional. |
+
+[7]: https://acsm.org/resistance-training-guidelines-update-2026/
+[8]: https://pubmed.ncbi.nlm.nih.gov/19204579/
+[9]: https://www.reddit.com/r/Maromba/comments/1o8lyll/treino_ab_ou_abcd/
+[10]: https://www.reddit.com/r/Maromba/comments/1gyheol/d%C3%BAvidas_sobre_recomposi%C3%A7%C3%A3o_corporal/

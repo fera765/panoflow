@@ -78,32 +78,27 @@ const beginnerPatterns: Exercise[][] = [
     makeExercise("treadmill", "Caminhada inclinada", "Esteira", "Cardio", 1, "12 min", 0, "velocidade 5 km/h", "Comece sem segurar nas barras; ajuste a velocidade com segurança.", "treadmill"),
   ],
   [
-    makeExercise("legcurl", "Cadeira flexora", "Cadeira flexora", "Posteriores", 3, "10–12", 75, "20 kg", "Alinhe o eixo da máquina ao joelho e controle a volta.", "legCurl"),
+    makeExercise("legcurl", "Cadeira flexora", "Cadeira flexora", "Posteriores", 2, "10–12", 75, "20 kg", "Alinhe o eixo da máquina ao joelho e controle a volta.", "legCurl"),
     makeExercise("row", "Remada baixa", "Remada baixa", "Costas", 3, "10–12", 90, "25 kg", "Puxe com cotovelos e evite compensar com o tronco.", "row"),
     makeExercise("shoulder", "Desenvolvimento sentado", "Máquina de ombros", "Ombros", 2, "10–12", 75, "15 kg", "Punhos alinhados e amplitude confortável, sem dor.", "shoulder"),
     makeExercise("bike", "Bike moderada", "Bicicleta", "Cardio", 1, "12 min", 0, "carga leve 2", "Mantenha cadência estável e ajuste o selim antes de começar.", "bike"),
   ],
   [
-    makeExercise("extension", "Cadeira extensora", "Cadeira extensora", "Quadríceps", 3, "12–15", 75, "25 kg", "Suba com controle e não bata o peso no final.", "extension"),
-    makeExercise("adductor", "Abdutora/adutora", "Cadeira abdutora/adutora", "Quadril", 2, "12–15", 60, "25 kg", "Movimente sem impulso e faça pausa curta na contração.", "adductor"),
-    makeExercise("crossover", "Crossover alto", "Crossover", "Peito", 2, "12–15", 60, "15 kg", "Costelas baixas e ombros longe das orelhas.", "crossover"),
+    makeExercise("extension", "Cadeira extensora", "Cadeira extensora", "Quadríceps", 2, "12–15", 75, "20 kg", "Suba com controle e não bata o peso no final.", "extension"),
+    makeExercise("adductor", "Abdutora/adutora", "Cadeira abdutora/adutora", "Quadril", 2, "12–15", 60, "20 kg", "Movimente sem impulso e faça pausa curta na contração.", "adductor"),
+    makeExercise("crossover", "Crossover alto", "Crossover", "Peito", 2, "12–15", 60, "10 kg", "Costelas baixas e ombros longe das orelhas.", "crossover"),
     makeExercise("treadmill", "Caminhada leve", "Esteira", "Cardio", 1, "15 min", 0, "velocidade 4.5 km/h", "Use o clipe de segurança e progrida apenas se estiver confortável.", "treadmill"),
-  ],
-  [
-    makeExercise("legpress", "Leg press 45°", "Leg press 45°", "Pernas", 3, "8–10", 105, "60 kg", "Pare antes de perder a posição lombar; sem pressa na descida.", "legPress"),
-    makeExercise("row", "Remada baixa", "Remada baixa", "Costas", 3, "8–10", 105, "35 kg", "Mantenha o peito aberto e controle a fase excêntrica.", "row"),
-    makeExercise("chestpress", "Supino máquina", "Supino máquina", "Peito", 3, "8–10", 105, "30 kg", "Não transforme a série em teste de carga; técnica vem primeiro.", "chestPress"),
-    makeExercise("bike", "Bike intervalada leve", "Bicicleta", "Cardio", 1, "10 min", 0, "carga 3", "Recupere se faltar ar; o objetivo é consistência.", "bike"),
   ],
 ];
 
-const patternNames = ["Base de pernas", "Empurrar e puxar", "Quadril e peito", "Força controlada"];
+const patternNames = ["Base de pernas", "Empurrar e puxar", "Quadril e peito"];
+const weeklySchedule: Array<number | null> = [0, 1, null, 2, null, null, null];
 
 const advancedPatterns = beginnerPatterns.map((pattern) => pattern.map((item) => ({
   ...item,
   sets: Math.min(item.sets + 1, 4),
   rest: item.rest ? item.rest + 15 : item.rest,
-  load: item.load.includes("kg") ? `${parseInt(item.load, 10) + 15} kg` : item.load,
+  load: item.load.includes("kg") ? `${parseInt(item.load, 10) + 10} kg` : item.load,
   cue: `${item.cue} Só aumente a carga quando completar o topo da faixa com técnica.`,
 })));
 
@@ -111,8 +106,9 @@ export function getPlanDays(level: TrainingLevel): TrainingDay[] {
   const patterns = level === "beginner" ? beginnerPatterns : advancedPatterns;
   return Array.from({ length: 30 }, (_, index) => {
     const day = index + 1;
-    const recovery = index % 7 === 6;
-    const patternIndex = index % patterns.length;
+    const scheduledPattern = weeklySchedule[index % weeklySchedule.length];
+    const recovery = scheduledPattern === null;
+    const patternIndex = scheduledPattern ?? 0;
     const exercises = recovery
       ? [makeExercise(`walk-${level}-${day}`, "Caminhada de recuperação", "Esteira", "Cardio leve", 1, "20 min", 0, "ritmo confortável", "Finalize sentindo que poderia continuar.", "treadmill")]
       : patterns[patternIndex].map((item) => ({ ...item, id: `${item.id}-${level}-${day}` }));
@@ -121,10 +117,10 @@ export function getPlanDays(level: TrainingLevel): TrainingDay[] {
       day,
       level,
       title: recovery ? "Recuperação ativa" : patternNames[patternIndex],
-      focus: recovery ? "Mobilidade + cardio leve" : patternIndex === 0 ? "Corpo inteiro" : patternIndex === 1 ? "Tronco" : patternIndex === 2 ? "Pernas e postura" : "Técnica e condicionamento",
-      duration: recovery ? 20 : 42 + patternIndex * 4,
+      focus: recovery ? "Mobilidade + cardio leve" : patternIndex === 0 ? "Corpo inteiro" : patternIndex === 1 ? "Tronco" : "Pernas e postura",
+      duration: recovery ? 20 : 36 + patternIndex * 4,
       note: level === "beginner"
-        ? "Pare 2–3 repetições antes da falha. Aprenda a máquina e registre como se sentiu."
+        ? "Treine com 2–3 repetições em reserva. Nos dias de recuperação, caminhe leve e preserve a técnica para voltar bem."
         : "Mantenha 1–2 repetições em reserva e registre carga, repetições e qualidade do movimento.",
       exercises,
     };
@@ -144,6 +140,7 @@ export function getDayKey(level: TrainingLevel, day: number) {
 }
 
 export const editorialSources = [
+  { label: "ACSM · atualização de diretrizes 2026", url: "https://acsm.org/resistance-training-guidelines-update-2026/" },
   { label: "ACSM · progressão no treinamento resistido", url: "https://pubmed.ncbi.nlm.nih.gov/19204579/" },
   { label: "OMS · atividade física e fortalecimento", url: "https://pubmed.ncbi.nlm.nih.gov/33239350/" },
   { label: "Revisão sobre treino resistido e composição corporal", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC9285060/" },
@@ -281,7 +278,7 @@ export const supportedLocale = "pt-BR";
 export const versionLabel = "v1.0 · protótipo funcional";
 export const isValidLevel = (level: string): level is TrainingLevel => level === "beginner" || level === "advanced";
 export const isValidDay = (day: number) => Number.isInteger(day) && day >= 1 && day <= 30;
-export const researchTrail = ["ACSM", "OMS", "PubMed", "Hipertrofia.org", "Reddit Maromba"];
+export const researchTrail = ["ACSM 2026", "ACSM/PubMed", "OMS", "Revisões PubMed", "Hipertrofia.org", "Reddit Maromba"];
 export const trainingMode = "machines-first";
 export const productPromise = "clareza e consistência, não garantia de resultado";
 export const unitAvailabilityNote = "Disponibilidade: confirme na sua unidade Panobianco";

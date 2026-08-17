@@ -62,6 +62,39 @@ describe("PanoFlow training data", () => {
     expect(result.profile.completedBeginnerDays).toHaveLength(30);
   });
 
+  it("keeps beginner weeks at three resistance sessions with active recovery days", () => {
+    const days = getPlanDays("beginner").slice(0, 7);
+    const recoveryDays = days.filter((day) => day.title === "Recuperação ativa");
+    const resistanceDays = days.filter((day) => day.title !== "Recuperação ativa");
+
+    expect(recoveryDays).toHaveLength(4);
+    expect(resistanceDays).toHaveLength(3);
+    expect(recoveryDays.every((day) => day.duration === 20)).toBe(true);
+    expect(resistanceDays.flatMap((day) => day.exercises).filter((exercise) => exercise.muscle !== "Cardio").every((exercise) => /kg$/.test(exercise.load))).toBe(true);
+  });
+
+  it("applies controlled progression from beginner to advanced", () => {
+    const beginner = getDay("beginner", 1);
+    const advanced = getDay("advanced", 1);
+    const beginnerResistance = beginner.exercises.filter((exercise) => exercise.muscle !== "Cardio");
+    const advancedResistance = advanced.exercises.filter((exercise) => exercise.muscle !== "Cardio");
+
+    expect(advancedResistance).toHaveLength(beginnerResistance.length);
+    advancedResistance.forEach((exercise, index) => {
+      const base = beginnerResistance[index];
+      expect(exercise.sets).toBeGreaterThanOrEqual(base.sets);
+      expect(exercise.rest).toBeGreaterThanOrEqual(base.rest);
+      expect(parseInt(exercise.load, 10)).toBeGreaterThan(parseInt(base.load, 10));
+      expect(exercise.cue).toContain("Só aumente a carga");
+    });
+  });
+
+  it("keeps the product promise and safety language explicit", () => {
+    const day = getDay("beginner", 1);
+    expect(day.note).toContain("repetições em reserva");
+    expect(day.note).not.toMatch(/garantia|shape pronto|perder peso rápido/i);
+  });
+
   it("unlocks the next calendar day after the current day is completed", () => {
     const day = getDay("beginner", 1);
     const result = completeTrainingDay(defaultProfile, "beginner", 1, day.exercises.map((exercise) => exercise.id), 1_000);
