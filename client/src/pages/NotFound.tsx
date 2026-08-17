@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, Home } from "lucide-react";
-import { useLocation } from "wouter";
+import { normalizeSiteBase, siteHomePath } from "@/lib/siteRouting";
 
 export default function NotFound() {
-  const [, setLocation] = useLocation();
+  const homePath = siteHomePath(normalizeSiteBase(import.meta.env.BASE_URL) ?? "");
 
   const handleGoHome = () => {
-    setLocation("/");
+    window.location.assign(homePath);
   };
 
   return (

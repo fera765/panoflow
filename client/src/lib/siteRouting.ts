@@ -4,5 +4,6 @@ export function normalizeSiteBase(baseUrl: string): string | undefined {
 }
 
 export function siteHomePath(baseUrl: string): string {
-  return baseUrl || "/";
+  if (!baseUrl || baseUrl === "/") return "/";
+  return `${baseUrl.replace(/\/+$/, "")}/`;
 }
