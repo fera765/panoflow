@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { consumeSiteRedirect, normalizeSiteBase } from "@/lib/siteRouting";
 import {
   Activity,
   AlertTriangle,
@@ -242,6 +243,14 @@ export default function Home() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("saved");
   const [saveError, setSaveError] = useState<string | null>(null);
   const [resetNotice, setResetNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    consumeSiteRedirect(
+      normalizeSiteBase(import.meta.env.BASE_URL),
+      window.location,
+      (path) => window.history.replaceState(window.history.state, "", path),
+    );
+  }, []);
 
   const day = useMemo(() => getDay(selectedLevel, selectedDay), [selectedLevel, selectedDay]);
   const dayKey = getDayKey(selectedLevel, selectedDay);

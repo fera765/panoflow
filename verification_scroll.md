@@ -43,3 +43,13 @@ Para simular a entrega real, foi iniciado um servidor estático temporário que 
 ## Fallback 404 e refresh no artefato estático
 
 No servidor estático que simula o GitHub Pages, a entrada direta em `/panoflow/` carregou a Home com MIME correto e zero erros de console. A entrada direta em `/panoflow/not-a-route` foi atendida pelo `404.html`, redirecionou para `/panoflow/?redirect=%2Fpanoflow%2Fnot-a-route` e, após o carregamento do React, apresentou o heading **Hoje você treina**; a página não exibiu a tela NotFound.
+
+## Diagnóstico externo do GitHub Pages
+
+A página oficial [GitHub Status](https://www.githubstatus.com/) registrou, em 17 de agosto de 2026, um incidente com o GitHub.com. O histórico informa que **Pages** estava com desempenho degradado às 15:10 UTC, que a degradação afetava API Requests, Actions, Git Operations, Pages e outros serviços, e que a mitigação geral foi anunciada às 16:59 UTC, seguida de impacto residual e investigação contínua às 17:34–17:36 UTC.
+
+Uma reportagem independente da [BleepingComputer](https://www.bleepingcomputer.com/news/microsoft/microsoft-confirms-github-is-down-worldwide/) também registrou o incidente do mesmo dia e mencionou problemas em API, Actions, Git Operations e downloads de conteúdo. A correlação temporal coincide com os builds do PanoFlow: a última revisão `b6510e64` foi `built` às 16:38 UTC, enquanto as revisões posteriores ficaram `errored` ou `building` durante o incidente. Isso indica que a falha pública atual é, neste momento, principalmente de processamento/CDN do GitHub Pages, não de base URL ou CSS do artefato local.
+
+## Redirect explícito após a correção
+
+Após implementar `getSiteRedirect` e o efeito de limpeza no Home, a navegação para `/panoflow/not-a-route?foo=1` no servidor estático equivalente ao GitHub Pages terminou em `/panoflow/` com título `PanoFlow — Personal Trainer`. A URL final não reteve a rota desconhecida nem o parâmetro `redirect`, demonstrando o contrato atualizado do fallback no artefato local.

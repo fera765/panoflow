@@ -60,3 +60,8 @@
 - [ ] Adicionar validação de browser no ambiente publicado cobrindo entrada em /panoflow/, refresh e navegação de retorno a Home.
 - [x] Executar validação visual/documentada de scroll em desktop e mobile nas abas Hoje, Calendário, Porção e Perfil, confirmando ausência de tearing/glitter com sidebar/topbar/bottom-nav sticky/fixed; métricas Playwright registradas em verification_scroll.md.
 - [x] Permitir o host do preview gerenciado no Vite para validar a navegação browser local sem bloqueio de allowedHosts.
+- [x] Auditar o artefato compilado em dist/ e comparar o índice raiz, o prefixo de assets e o comportamento do 404.html com o roteador wouter: comprovado que dist/index.html usa corretamente /panoflow/assets/ e 404.html redireciona para o subpath base.
+- [x] Testar se o redirecionamento do 404.html no GitHub Pages colide com o base path /panoflow/: confirmado que o script calcula o base `/panoflow` mas a aplicação atualmente ignora o parâmetro `?redirect=`.
+- [ ] Corrigir qualquer incompatibilidade entre o script de fallback e o Router em subdiretório estático.
+- [ ] Implementar tratamento explícito do parâmetro `?redirect=` no app, mantendo a geração do 404.html, com validação integrada do Home após o fallback.
+- [ ] Validar deep-link e refresh em `/panoflow/` e em rota inexistente, verificando que Home ou rota esperada renderiza sem NotFound em servidor equivalente ao GitHub Pages e no ambiente público quando o CDN atualizar.
