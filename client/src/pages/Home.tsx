@@ -53,20 +53,14 @@ import {
   type TrainingLevel,
   type TrainingProfile,
 } from "@shared/trainingData";
-import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
-import { canRetryProgressSync, getProgressSyncLabel, getProgressSyncMessage } from "@/lib/progressSync";
-import { createProgressPersistenceController } from "@/lib/progressPersistenceController";
 import {
   loadStoredDay,
   loadStoredLevel,
   loadStoredProfile,
-  normalizeStoredProfile,
   resetStoredProgress,
   saveStoredDay,
   saveStoredLevel,
   saveStoredProfile,
-  chooseMostProgressedProfile,
   type StoredProfile,
 } from "@/lib/localProfileStorage";
 
@@ -233,7 +227,6 @@ function CalendarView({ profile, selectedLevel, selectedDay, onSelectLevel, onSe
 }
 
 export default function Home() {
-  const { user, loading, logout } = useAuth();
   const [profile, setProfile] = useState<StoredProfile>(() => loadStoredProfile());
   const [tab, setTab] = useState<Tab>("today");
   const [selectedLevel, setSelectedLevel] = useState<TrainingLevel>(() => {
@@ -246,35 +239,9 @@ export default function Home() {
   const [showSources, setShowSources] = useState(false);
   const [celebrate, setCelebrate] = useState(false);
   const [restSeconds, setRestSeconds] = useState(0);
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("saved");
   const [saveError, setSaveError] = useState<string | null>(null);
   const [resetNotice, setResetNotice] = useState<string | null>(null);
-  const progressQuery = trpc.progress.get.useQuery(undefined, {
-    enabled: Boolean(user),
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
-  const saveProgress = trpc.progress.save.useMutation();
-  const serverHydrated = useRef(false);
-  const persistenceController = useMemo(() => createProgressPersistenceController<Partial<StoredProfile>>({
-    load: async () => {
-      if (progressQuery.error) throw progressQuery.error;
-      return (progressQuery.data as Partial<StoredProfile> | null | undefined) ?? null;
-    },
-    save: (profileJson) => saveProgress.mutateAsync({ profileJson }),
-    onStateChange: (state) => {
-      if (state.status === "saving") {
-        setSaveState("saving");
-        setSaveError(null);
-      } else if (state.status === "saved") {
-        setSaveState("saved");
-        setSaveError(null);
-      } else if (state.status === "error") {
-        setSaveState("error");
-        setSaveError(state.error);
-      }
-    },
-  }), [progressQuery.data, progressQuery.error, saveProgress.mutateAsync]);
 
   const day = useMemo(() => getDay(selectedLevel, selectedDay), [selectedLevel, selectedDay]);
   const dayKey = getDayKey(selectedLevel, selectedDay);
@@ -286,36 +253,17 @@ export default function Home() {
   const totalCompleted = profile.completedBeginnerDays.length + profile.completedAdvancedDays.length;
   const nextDay = getNextDay(profile, currentLevel);
 
-    useEffect(() => {
-    if (!user) {
-      if (!loading) serverHydrated.current = true;
-      return;
-    }
-    if (progressQuery.isLoading) return;
-    void persistenceController.load().then((result) => {
-      if (result.state === "error") {
-        serverHydrated.current = false;
-        return;
-      }
-      const localProfile = loadStoredProfile();
-      const remoteProfile = result.data && typeof result.data === "object" ? normalizeStoredProfile(result.data) : null;
-      const nextProfile = remoteProfile ? chooseMostProgressedProfile(localProfile, remoteProfile) : localProfile;
-      setProfile(nextProfile);
-      serverHydrated.current = true;
-    });
-  }, [user, loading, progressQuery.data, progressQuery.error, progressQuery.isLoading, persistenceController]);
-
   useEffect(() => {
+    setSaveState("saving");
+    setSaveError(null);
     const saved = saveStoredProfile(profile);
-    if (!saved && typeof window !== "undefined") {
+    if (!saved) {
       setSaveState("error");
-      setSaveError("Não foi possível salvar neste dispositivo.");
+      setSaveError("Não foi possível salvar neste navegador.");
       return;
     }
-    if (user && serverHydrated.current) {
-      void syncCurrentProfile(profile);
-    }
-  }, [profile, user]);
+    setSaveState("saved");
+  }, [profile]);
 
   useEffect(() => {
     saveStoredDay(selectedDay);
@@ -351,24 +299,9 @@ export default function Home() {
     if (selectedDay < 30) setSelectedDay(selectedDay + 1);
   }
 
-  async function syncCurrentProfile(nextProfile: StoredProfile) {
-    await persistenceController.save(JSON.stringify(nextProfile));
-  }
-
-  async function retryPersistence() {
-    const result = await persistenceController.retry();
-    if (result.state === "loaded") {
-      serverHydrated.current = true;
-      if (result.data && typeof result.data === "object") {
-        setProfile((current) => ({ ...current, ...result.data }));
-      }
-    }
-  }
-
   function resetDemo() {
-    if (typeof window !== "undefined" && !window.confirm("Resetar todo o progresso salvo neste dispositivo? A conta autenticada não será apagada.")) return;
+    if (typeof window !== "undefined" && !window.confirm("Resetar todo o progresso salvo neste dispositivo? Essa ação não pode ser desfeita.")) return;
     resetStoredProgress();
-    serverHydrated.current = false;
     setProfile({ ...defaultProfile });
     setSelectedDay(1);
     setSelectedLevel("beginner");
@@ -376,12 +309,12 @@ export default function Home() {
     setTab("today");
     setSaveState("idle");
     setSaveError(null);
-    setResetNotice("Dados locais resetados. O progresso da conta continua preservado.");
+    setResetNotice("Dados locais resetados. O app voltou ao início.");
     window.setTimeout(() => setResetNotice(null), 4500);
   }
 
-  const displayName = user?.name?.split(" ")[0] ?? "Atleta";
-  const avatar = (user?.name?.[0] ?? "A").toUpperCase();
+  const displayName = "Atleta";
+  const avatar = "A";
 
   return (
     <div className="pf-app-shell">
@@ -403,8 +336,8 @@ export default function Home() {
         </div>
       </aside>
       {showMenu && <button type="button" className="sidebar-scrim" onClick={() => setShowMenu(false)} aria-label="Fechar navegação" />}
-      <main className="pf-main">
-        <header className="topbar"><button type="button" className="mobile-menu" onClick={() => setShowMenu(true)} aria-label="Abrir menu"><Menu size={21} /></button><div className="mobile-brand">PANO<span>FLOW</span></div><div className="topbar-actions">{user && <span className={`save-status save-status--${saveState}`} title={saveError ?? "Status da sincronização"}>{getProgressSyncLabel(saveState)}</span>}<div className="topbar-streak"><Flame size={17} /><strong>{profile.streak}</strong><span>streak</span></div><div className="topbar-xp"><Zap size={16} /><strong>{profile.xp.toLocaleString("pt-BR")}</strong><span>XP</span></div><div className="avatar" title={user?.name ?? "Modo demonstração"}>{avatar}</div></div></header>
+      <main className="app-main">
+        <header className="topbar"><button type="button" className="mobile-menu" onClick={() => setShowMenu(true)} aria-label="Abrir menu"><Menu size={21} /></button><div className="mobile-brand">PANO<span>FLOW</span></div><div className="topbar-actions"><span className={`save-status save-status--${saveState}`} title={saveError ?? "Progresso salvo neste navegador"}>{saveState === "error" ? "ERRO AO SALVAR" : saveState === "saving" ? "SALVANDO" : "SALVO LOCAL"}</span><div className="topbar-streak"><Flame size={17} /><strong>{profile.streak}</strong><span>streak</span></div><div className="topbar-xp"><Zap size={16} /><strong>{profile.xp.toLocaleString("pt-BR")}</strong><span>XP</span></div><div className="avatar" title="Progresso local">{avatar}</div></div></header>
         <div className="page-wrap">
           {tab === "today" && <>
             <section className="hero-row"><div><span className="eyebrow">{currentLevel === "beginner" ? "CICLO 01 · FUNDAMENTO" : "CICLO 02 · EVOLUÇÃO"}</span><h1>Hoje você treina<br /><em>por você.</em></h1><p className="hero-copy">Foco em um treino claro, seguro e repetível. A sessão de hoje é o seu próximo ponto de evolução.</p></div><div className="hero-badge"><div className="hero-badge__top"><Trophy size={18} /><span>OBJETIVO DO CICLO</span></div><strong>{currentLevel === "beginner" ? "Construir base" : "Subir o nível"}</strong><div className="mini-progress"><span style={{ width: `${progress[currentLevel]}%` }} /></div><small>{progress[currentLevel]}% do ciclo completo</small></div></section>
@@ -413,14 +346,14 @@ export default function Home() {
           </>}
           {tab === "calendar" && <CalendarView profile={profile} selectedLevel={selectedLevel} selectedDay={selectedDay} onSelectLevel={(level) => { setSelectedLevel(level); setSelectedDay(getNextDay(profile, level)); setTab("today"); }} onSelectDay={(dayNumber) => { setSelectedDay(dayNumber); setTab("today"); }} />}
           {tab === "portion" && <PortionView />}
-          {tab === "profile" && <section className="profile-page"><div className="profile-heading"><div className="profile-avatar">{avatar}</div><div><span className="eyebrow">PERFIL DO ATLETA</span><h1>{displayName}, vamos construir.</h1><p>{user ? "Sua conta está conectada." : "Modo demonstração: seus dados ficam salvos neste navegador."}</p></div></div><div className="profile-grid"><div className="profile-card"><div className="section-heading section-heading--compact"><div><span className="eyebrow">DADOS BASE</span><h2>Seu ponto de partida</h2></div><UserRound size={20} /></div><div className="body-metrics"><div><span>Altura</span><strong>{profile.heightCm} <small>cm</small></strong></div><div><span>Peso inicial</span><strong>{profile.weightKg} <small>kg</small></strong></div><div><span>Nível</span><strong>{levelLabel(currentLevel)}</strong></div></div><div className="profile-disclaimer"><Info size={15} /> Ajuste estes dados com um profissional. O PanoFlow não diagnostica nem prescreve.</div></div><div className="profile-card history-card"><div className="section-heading section-heading--compact"><div><span className="eyebrow">HISTÓRICO</span><h2>Últimas vitórias</h2></div><Trophy size={20} /></div>{profile.history.length ? <div className="history-list">{profile.history.slice(-5).reverse().map((entry, index) => <div className="history-item" key={`${entry.level}-${entry.day}-${entry.completedAt}`}><div className="history-icon"><Check size={15} /></div><div><strong>Dia {entry.day} · {levelLabel(entry.level)}</strong><span>{formatDate(entry.completedAt)} · +{entry.xp} XP</span></div><span className="history-index">#{profile.history.length - index}</span></div>)}</div> : <div className="empty-history"><Award size={28} /><p>Seu histórico começa no primeiro treino concluído.</p></div>}</div></div><div className="profile-actions"><div className="profile-actions__left"><button type="button" className="text-button" onClick={resetDemo}><RotateCcw size={15} /> Resetar progresso demo</button>{user && canRetryProgressSync(saveState) && <button type="button" className="text-button text-button--retry" onClick={() => { void retryPersistence(); }}><RotateCcw size={15} /> Tentar sincronizar</button>}</div><div className="profile-actions__right">{saveError && <span className="save-error"><AlertTriangle size={13} /> {saveError}</span>}{user && <button type="button" className="text-button text-button--muted" onClick={() => void logout()}><LogOut size={15} /> Sair</button>}</div></div></section>}
+          {tab === "profile" && <section className="profile-page"><div className="profile-heading"><div className="profile-avatar">{avatar}</div><div><span className="eyebrow">PERFIL DO ATLETA</span><h1>{displayName}, vamos construir.</h1><p>Seus dados ficam salvos neste navegador, sem conta ou servidor.</p></div></div><div className="profile-grid"><div className="profile-card"><div className="section-heading section-heading--compact"><div><span className="eyebrow">DADOS BASE</span><h2>Seu ponto de partida</h2></div><UserRound size={20} /></div><div className="body-metrics"><div><span>Altura</span><strong>{profile.heightCm} <small>cm</small></strong></div><div><span>Peso inicial</span><strong>{profile.weightKg} <small>kg</small></strong></div><div><span>Nível</span><strong>{levelLabel(currentLevel)}</strong></div></div><div className="profile-disclaimer"><Info size={15} /> Ajuste estes dados com um profissional. O PanoFlow não diagnostica nem prescreve.</div></div><div className="profile-card history-card"><div className="section-heading section-heading--compact"><div><span className="eyebrow">HISTÓRICO</span><h2>Últimas vitórias</h2></div><Trophy size={20} /></div>{profile.history.length ? <div className="history-list">{profile.history.slice(-5).reverse().map((entry, index) => <div className="history-item" key={`${entry.level}-${entry.day}-${entry.completedAt}`}><div className="history-icon"><Check size={15} /></div><div><strong>Dia {entry.day} · {levelLabel(entry.level)}</strong><span>{formatDate(entry.completedAt)} · +{entry.xp} XP</span></div><span className="history-index">#{profile.history.length - index}</span></div>)}</div> : <div className="empty-history"><Award size={28} /><p>Seu histórico começa no primeiro treino concluído.</p></div>}</div></div><div className="profile-actions"><div className="profile-actions__left"><button type="button" className="text-button" onClick={resetDemo}><RotateCcw size={15} /> Resetar progresso local</button></div><div className="profile-actions__right">{saveError && <span className="save-error"><AlertTriangle size={13} /> {saveError}</span>}<span className="local-only-note">Modo offline · dados neste navegador</span></div></div></section>}
         </div>
       </main>
       <nav className="bottom-nav" aria-label="Navegação móvel"><button type="button" className={tab === "today" ? "is-active" : ""} onClick={() => setTab("today")}><Activity size={19} /><span>Hoje</span></button><button type="button" className={tab === "calendar" ? "is-active" : ""} onClick={() => setTab("calendar")}><CalendarDays size={19} /><span>Calendário</span></button><button type="button" className={tab === "portion" ? "is-active" : ""} onClick={() => setTab("portion")}><Utensils size={19} /><span>Porção</span></button><button type="button" className={tab === "profile" ? "is-active" : ""} onClick={() => setTab("profile")}><UserRound size={19} /><span>Perfil</span></button></nav>
       {activeVideo && <VideoModal exercise={activeVideo} onClose={() => setActiveVideo(null)} />}
       {showSources && <div className="modal-backdrop" role="presentation" onClick={() => setShowSources(false)}><div className="sources-modal" role="dialog" aria-modal="true" aria-label="Fontes e segurança" onClick={(event) => event.stopPropagation()}><div className="video-modal__head"><div><span className="eyebrow">EDITORIAL</span><h2>Treino com contexto</h2></div><button type="button" className="icon-button" onClick={() => setShowSources(false)} aria-label="Fechar fontes"><X size={19} /></button></div><p>O catálogo combina princípios de progressão no treino resistido, atividade física e referências de comunidades. As discussões de fórum ajudam a entender dúvidas reais, mas não substituem avaliação profissional.</p><div className="sources-list">{editorialSources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}><span>{source.label}</span><ChevronRight size={16} /></a>)}</div><div className="source-warning"><ShieldCheck size={17} /><span>{appCopy.equipmentNote}</span></div></div></div>}
       {celebrate && <div className="celebration" role="status"><div className="celebration__burst"><Sparkles size={25} /></div><strong>Treino salvo!</strong><span>+{estimateDayXp(day)} XP · próximo dia liberado</span></div>}
-      {loading && <div className="loading-bar" />}
+
     </div>
   );
 }

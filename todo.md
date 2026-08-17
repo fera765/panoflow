@@ -48,3 +48,7 @@
 - [x] Validar visualmente a aba Porção em desktop e mobile e executar build/testes antes do checkpoint.
 - [x] Explicitar no app e/ou em research.md que fóruns são insight prático complementar, não base principal de prescrição.
 - [x] Adicionar teste explícito de progressão gradual comparando iniciante e avançado em carga, séries e descanso.
+- [x] Converter o PanoFlow para estático removendo tRPC, banco e autenticação remota.
+- [x] Ajustar o frontend para usar 100% localStorage sem depender de backend.
+- [x] Configurar build estático em vite.config.ts e verificar build de produção.
+- [ ] Criar repositório no GitHub via CLI `gh` e publicar arquivos estáticos.
