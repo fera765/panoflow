@@ -33,3 +33,11 @@
 - [x] Criar a aba "Porção" com receitas 100% naturais de pré-treino e pós-treino (gengibre em pó, guaraná em pó, etc.) e avisos de saúde.
 - [x] Validar a nova aba, as cargas em kg e a responsividade mobile.
 - [x] Validar explicitamente a aba Porção e a bottom nav em viewport móvel com screenshot/check visual mobile após as mudanças.
+- [x] Corrigir persistência no carregamento e salvamento para nunca perder XP, streak e histórico ao sair e voltar.
+- [x] Adicionar botão de reset completo na sidebar que limpa localStorage e reinicia o app.
+- [x] Revisar index.css para remover regras de scroll com aceleração excessiva de GPU / transform que causam glitches visuais.
+- [x] Validar build, testes e comportamento do app após as correções.
+- [x] Criar testes para o round-trip local de perfil, nível, dia ativo e reset completo do localStorage.
+- [x] Validar que o merge entre local e remoto preserva o maior progresso e não sobrescreve XP/histórico com dados vazios.
+- [x] Corrigir e testar regras CSS de scroll, incluindo a transição inválida do calendário e camadas de GPU removidas.
+- [x] Capturar verificação visual desktop e mobile após as correções de persistência e scroll.

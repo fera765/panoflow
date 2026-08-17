@@ -57,23 +57,20 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { canRetryProgressSync, getProgressSyncLabel, getProgressSyncMessage } from "@/lib/progressSync";
 import { createProgressPersistenceController } from "@/lib/progressPersistenceController";
-
-const PROFILE_KEY = "panoflow-profile-v1";
-const ACTIVE_DAY_KEY = "panoflow-active-day-v1";
+import {
+  loadStoredDay,
+  loadStoredLevel,
+  loadStoredProfile,
+  normalizeStoredProfile,
+  resetStoredProgress,
+  saveStoredDay,
+  saveStoredLevel,
+  saveStoredProfile,
+  chooseMostProgressedProfile,
+  type StoredProfile,
+} from "@/lib/localProfileStorage";
 
 type Tab = "today" | "calendar" | "portion" | "profile";
-
-type StoredProfile = TrainingProfile & { lastCompletedAt?: number };
-
-function loadProfile(): StoredProfile {
-  try {
-    const saved = localStorage.getItem(PROFILE_KEY);
-    if (saved) return { ...defaultProfile, ...JSON.parse(saved) };
-  } catch {
-    // Demo mode remains usable if local storage is unavailable.
-  }
-  return { ...defaultProfile };
-}
 
 function formatDate(timestamp: number) {
   return new Date(timestamp).toLocaleDateString("pt-BR", {
@@ -237,12 +234,13 @@ function CalendarView({ profile, selectedLevel, selectedDay, onSelectLevel, onSe
 
 export default function Home() {
   const { user, loading, logout } = useAuth();
-  const [profile, setProfile] = useState<StoredProfile>(() => loadProfile());
+  const [profile, setProfile] = useState<StoredProfile>(() => loadStoredProfile());
   const [tab, setTab] = useState<Tab>("today");
-  const [selectedLevel, setSelectedLevel] = useState<TrainingLevel>(() => getCurrentLevel(loadProfile()));
-  const [selectedDay, setSelectedDay] = useState(() => {
-    try { return Number(localStorage.getItem(ACTIVE_DAY_KEY)) || 1; } catch { return 1; }
+  const [selectedLevel, setSelectedLevel] = useState<TrainingLevel>(() => {
+    const savedProfile = loadStoredProfile();
+    return loadStoredLevel(getCurrentLevel(savedProfile));
   });
+  const [selectedDay, setSelectedDay] = useState(() => loadStoredDay());
   const [activeVideo, setActiveVideo] = useState<Exercise | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const [showSources, setShowSources] = useState(false);
@@ -250,13 +248,14 @@ export default function Home() {
   const [restSeconds, setRestSeconds] = useState(0);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [resetNotice, setResetNotice] = useState<string | null>(null);
   const progressQuery = trpc.progress.get.useQuery(undefined, {
     enabled: Boolean(user),
     retry: false,
     refetchOnWindowFocus: false,
   });
   const saveProgress = trpc.progress.save.useMutation();
-  const serverHydrated = useRef(!user);
+  const serverHydrated = useRef(false);
   const persistenceController = useMemo(() => createProgressPersistenceController<Partial<StoredProfile>>({
     load: async () => {
       if (progressQuery.error) throw progressQuery.error;
@@ -289,7 +288,7 @@ export default function Home() {
 
     useEffect(() => {
     if (!user) {
-      serverHydrated.current = true;
+      if (!loading) serverHydrated.current = true;
       return;
     }
     if (progressQuery.isLoading) return;
@@ -298,23 +297,33 @@ export default function Home() {
         serverHydrated.current = false;
         return;
       }
+      const localProfile = loadStoredProfile();
+      const remoteProfile = result.data && typeof result.data === "object" ? normalizeStoredProfile(result.data) : null;
+      const nextProfile = remoteProfile ? chooseMostProgressedProfile(localProfile, remoteProfile) : localProfile;
+      setProfile(nextProfile);
       serverHydrated.current = true;
-      if (result.data && typeof result.data === "object") {
-        setProfile((current) => ({ ...current, ...result.data }));
-      }
     });
-  }, [user, progressQuery.data, progressQuery.error, progressQuery.isLoading, persistenceController]);
+  }, [user, loading, progressQuery.data, progressQuery.error, progressQuery.isLoading, persistenceController]);
 
   useEffect(() => {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    const saved = saveStoredProfile(profile);
+    if (!saved && typeof window !== "undefined") {
+      setSaveState("error");
+      setSaveError("Não foi possível salvar neste dispositivo.");
+      return;
+    }
     if (user && serverHydrated.current) {
       void syncCurrentProfile(profile);
     }
   }, [profile, user]);
 
   useEffect(() => {
-    localStorage.setItem(ACTIVE_DAY_KEY, String(selectedDay));
+    saveStoredDay(selectedDay);
   }, [selectedDay]);
+
+  useEffect(() => {
+    saveStoredLevel(selectedLevel);
+  }, [selectedLevel]);
 
   useEffect(() => {
     if (!restSeconds) return;
@@ -357,9 +366,18 @@ export default function Home() {
   }
 
   function resetDemo() {
+    if (typeof window !== "undefined" && !window.confirm("Resetar todo o progresso salvo neste dispositivo? A conta autenticada não será apagada.")) return;
+    resetStoredProgress();
+    serverHydrated.current = false;
     setProfile({ ...defaultProfile });
     setSelectedDay(1);
     setSelectedLevel("beginner");
+    setRestSeconds(0);
+    setTab("today");
+    setSaveState("idle");
+    setSaveError(null);
+    setResetNotice("Dados locais resetados. O progresso da conta continua preservado.");
+    window.setTimeout(() => setResetNotice(null), 4500);
   }
 
   const displayName = user?.name?.split(" ")[0] ?? "Atleta";
@@ -379,6 +397,8 @@ export default function Home() {
         <div className="sidebar-bottom">
           <div className="source-note"><Sparkles size={16} /><div><strong>Treino com contexto</strong><span>Ciência + prática + consistência.</span></div></div>
           <button type="button" className="source-button" onClick={() => setShowSources(true)}><CircleHelp size={16} /> Fontes e segurança</button>
+          <button type="button" className="source-button reset-button" onClick={resetDemo}><RotateCcw size={16} /> Resetar dados locais</button>
+          {resetNotice && <span className="reset-notice" role="status">{resetNotice}</span>}
           <div className="sidebar-footer"><span>{dataVersion}</span><span>Panobianco</span></div>
         </div>
       </aside>
