@@ -1,0 +1,30 @@
+# Project TODO - PanoFlow
+
+- [x] Inicializar projeto PanoFlow com scaffold web-db-user
+- [x] Criar esquema de banco de dados para progresso de treinos, streak, XP, histórico e perfil
+- [x] Desenvolver dataset completo de treinos para Iniciante (Dias 1-30) e Avançado (Dias 31-60) com aparelhos reais da Panobianco, séries, repetições, carga e vídeos embutidos
+- [x] Construir interface All Black com tema escuro total, tipografia impactante e micro-animações gamificadas estilo Duolingo
+- [x] Implementar visualização de calendários (Iniciante e Avançado) com bloqueio/desbloqueio dinâmico
+- [x] Implementar visualizador de treino do dia com checklist interativo, timer de descanso e embed de vídeo demonstrativo
+- [x] Implementar sistema de XP, streak de dias consecutivos e animações de conclusão
+- [x] Implementar página de Perfil com dados físicos e histórico de treinos concluídos
+- [x] Validar rotas, testes vitest e entregar o app funcional
+- [x] Corrigir o módulo shared/trainingData.ts, removendo declarações duplicadas e reduzindo o catálogo para uma fonte única de dados.
+- [x] Integrar o catálogo de treinos, aparelhos e progresso ao fluxo principal do aplicativo.
+- [x] Validar os fluxos de treino, desbloqueio, XP e calendário com testes automatizados.
+- [x] Revisar a cobertura visual e responsiva do PanoFlow antes do checkpoint.
+- [x] Implementar lógica real de streak baseada em datas consecutivas, com reset quando houver quebra.
+- [x] Adicionar testes do router progress para load/save, parsing inválido e comportamento autenticado.
+- [x] Adicionar testes do fluxo de conclusão: checklist completo, XP, desbloqueio do próximo dia e transição ao avançado.
+- [x] Validar estados de erro e sucesso da persistência no frontend e no backend.
+- [x] Adicionar testes automatizados do fluxo de conclusão do treino cobrindo checklist completo, ganho de XP, desbloqueio do próximo dia e transição do dia 30 iniciante para avançado.
+- [x] Implementar e validar tratamento de erro/sucesso da persistência no frontend, com indicador de salvamento e mensagem de erro/retry.
+- [x] Adicionar teste automatizado que valide explicitamente o desbloqueio do próximo dia após concluir um treino, usando getNextDay e o estado do calendário.
+- [x] Adicionar testes ou validação de frontend para os estados de persistência: salvando, salvo, erro e retry, incluindo falha de leitura e gravação.
+- [x] Incluir testes client/**/*.test.ts na configuração do Vitest e confirmar que a suíte frontend é executada.
+- [x] Adicionar teste que conclua um treino via completeTrainingDay e valide getNextDay e o desbloqueio resultante no calendário.
+- [x] Extrair o fluxo de persistência do Home para uma camada testável e cobrir saving, saved, error, retry, falha de leitura e falha de gravação.
+- [x] Criar um estado de calendário testável e validar que a conclusão torna o próximo dia visível como desbloqueado.
+- [x] Extrair também a leitura de progresso do Home e cobrir o fluxo integrado de persistência no cliente, incluindo retry.
+- [x] Criar um controlador/hook de persistência testável com transições integradas de leitura, salvamento, erro e retry acionado pelo usuário.
+- [x] Adicionar teste de cliente para o controlador integrado, incluindo fallback local e retry após falha de gravação.
