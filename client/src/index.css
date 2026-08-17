@@ -67,8 +67,8 @@
 }
 
 * { box-sizing: border-box; }
-html { background: #050505; overflow-x: clip; }
-body { margin: 0; background: #050505; color: #f3f5ee; font-family: 'Manrope', sans-serif; overflow-x: clip; overscroll-behavior-x: none; }
+html { background: #050505; overflow-x: hidden; }
+body { margin: 0; min-width: 0; background: #050505; color: #f3f5ee; font-family: 'Manrope', sans-serif; overflow-x: hidden; overflow-y: auto; overscroll-behavior-x: none; }
 button, input { font: inherit; }
 button { border: 0; }
 button:focus-visible, a:focus-visible { outline: 2px solid #d5f83d; outline-offset: 3px; }
@@ -81,7 +81,7 @@ a { color: inherit; text-decoration: none; }
 
 .container { width: 100%; margin-inline: auto; padding-inline: 1rem; }
 
-.pf-app-shell { min-height: 100vh; background: #050505; color: #f3f5ee; display: flex; overflow-x: clip; }
+.pf-app-shell { min-height: 100vh; background: #050505; color: #f3f5ee; display: flex; overflow-x: hidden; }
 .pf-sidebar { width: 238px; min-width: 238px; min-height: 100vh; padding: 28px 18px 22px; border-right: 1px solid rgba(255,255,255,.075); background: #080908; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 40; }
 .brand-lockup { display: flex; align-items: center; gap: 11px; padding: 0 12px; }
 .brand-mark { width: 36px; height: 36px; border-radius: 10px; background: #d5f83d; color: #0d1008; display: grid; place-items: center; transform: rotate(-7deg); box-shadow: 0 0 28px rgba(213,248,61,.11); }
@@ -106,7 +106,7 @@ a { color: inherit; text-decoration: none; }
 .source-button:hover, .text-button:hover { color: #d5f83d; }
 .sidebar-footer { display: flex; justify-content: space-between; padding: 13px 10px 0; border-top: 1px solid rgba(255,255,255,.06); color: #545b54; font: 9px 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .06em; }
 .mobile-close, .mobile-menu, .mobile-brand { display: none; }
-.pf-main { flex: 1; min-width: 0; overflow-x: clip; }
+.pf-main { flex: 1 1 auto; min-width: 0; overflow-x: hidden; }
 .topbar { height: 74px; display: flex; justify-content: flex-end; align-items: center; padding: 0 4.3vw; border-bottom: 1px solid rgba(255,255,255,.06); background: #050505; position: sticky; top: 0; z-index: 30; }
 .topbar-actions { display: flex; align-items: center; gap: 22px; }
 .topbar-streak, .topbar-xp { display: flex; align-items: center; gap: 6px; font-size: 11px; }
@@ -280,18 +280,18 @@ a { color: inherit; text-decoration: none; }
 .video-modal--immersive .modal-note { flex: 0 0 auto; margin-bottom: 0; }
 .video-modal--immersive:fullscreen { width: 100vw; height: 100dvh; background: #070807; }
 
-.portion-page { display: grid; gap: 24px; min-width: 0; max-width: 100%; padding-bottom: 40px; overflow-x: clip; }
+.portion-page { display: grid; gap: 24px; min-width: 0; max-width: 100%; padding-bottom: 40px; overflow-x: hidden; overflow-y: visible; }
 .portion-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; min-width: 0; padding: clamp(24px, 4vw, 42px); border: 1px solid rgba(213, 248, 61, .16); border-radius: 18px; background: radial-gradient(circle at 86% 18%, rgba(213, 248, 61, .14), transparent 33%), linear-gradient(135deg, #151b12, #0d100d 62%); overflow: hidden; }
 .portion-hero h1 { margin: 10px 0 12px; color: #f2f5ed; font: 800 clamp(36px, 5vw, 62px)/.94 "Space Grotesk", sans-serif; letter-spacing: -.075em; }
 .portion-hero h1 span { color: #d5f83d; }
 .portion-hero > * { min-width: 0; }.portion-hero p { max-width: 600px; margin: 0; color: #a5af9d; font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
 .portion-hero__badge { display: flex; align-items: center; gap: 12px; min-width: 150px; padding: 16px; border: 1px solid rgba(213, 248, 61, .25); border-radius: 13px; color: #d5f83d; background: rgba(0, 0, 0, .2); font-size: 11px; line-height: 1.35; text-transform: uppercase; letter-spacing: .1em; }
 .portion-hero__badge strong { color: #f4f7ef; font-size: 15px; letter-spacing: 0; text-transform: none; }
-.portion-filters { display: flex; gap: 8px; min-width: 0; max-width: 100%; padding: 0 0 2px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-x; }.portion-filters::-webkit-scrollbar { display: none; }.portion-filters button { flex: 0 0 auto; }
+.portion-filters { display: flex; gap: 8px; min-width: 0; max-width: 100%; padding: 0 0 2px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; -ms-overflow-style: none; }.portion-filters::-webkit-scrollbar { display: none; }.portion-filters button { flex: 0 0 auto; }
 .portion-filters button { border: 1px solid rgba(255, 255, 255, .1); border-radius: 9px; padding: 10px 15px; color: #939d8d; background: #111411; font-size: 11px; font-weight: 700; transition: .18s ease; }
 .portion-filters button:hover, .portion-filters button.is-active { border-color: rgba(213, 248, 61, .42); color: #071008; background: #d5f83d; }
 .portion-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; min-width: 0; }
-.recipe-card { min-width: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, .09); border-radius: 15px; background: #101310; box-shadow: 0 15px 40px rgba(0, 0, 0, .13); }
+.recipe-card { min-width: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, .09); border-radius: 15px; background: #101310; box-shadow: 0 15px 40px rgba(0, 0, 0, .13); transform: none; will-change: auto; }
 .recipe-card__top { display: flex; justify-content: space-between; gap: 12px; padding: 12px 16px; color: #0a0d09; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .recipe-card__top--pre { background: #d5f83d; }
 .recipe-card__top--post { background: #bba7ff; }

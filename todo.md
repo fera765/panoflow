@@ -53,3 +53,6 @@
 - [x] Configurar build estático em vite.config.ts e verificar build de produção.
 - [x] Criar repositório no GitHub via CLI `gh` e publicar arquivos estáticos.
 - [x] Publicar o build estático em uma branch gh-pages e habilitar GitHub Pages via configuração legacy, evitando dependência de permissão de GitHub Actions workflows.
+- [ ] Corrigir o erro 404 e o redirecionamento Go Home no GitHub Pages usando um script de redirecionamento no 404.html e base correta.
+- [ ] Eliminar definitivamente os glitches de scroll ajustando as regras de overflow, position fixed/sticky e altura no index.css.
+- [ ] Reconstruir, atualizar a branch gh-pages e verificar o acesso HTTP 200 e o carregamento do app no GitHub Pages.
