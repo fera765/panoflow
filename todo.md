@@ -28,7 +28,8 @@
 - [x] Extrair também a leitura de progresso do Home e cobrir o fluxo integrado de persistência no cliente, incluindo retry.
 - [x] Criar um controlador/hook de persistência testável com transições integradas de leitura, salvamento, erro e retry acionado pelo usuário.
 - [x] Adicionar teste de cliente para o controlador integrado, incluindo fallback local e retry após falha de gravação.
-- [ ] Atualizar o catálogo de treinos para exibir cargas em quilogramas (ex.: "12 kg") em vez de RPE.
-- [ ] Implementar visualização de vídeo em tela cheia (fullscreen / iframe ampliado).
-- [ ] Criar a aba "Porção" com receitas 100% naturais de pré-treino e pós-treino (gengibre em pó, guaraná em pó, etc.) e avisos de saúde.
-- [ ] Validar a nova aba, as cargas em kg e a responsividade mobile.
+- [x] Atualizar o catálogo de treinos para exibir cargas em quilogramas (ex.: "12 kg") em vez de RPE.
+- [x] Implementar visualização de vídeo em tela cheia (fullscreen / iframe ampliado).
+- [x] Criar a aba "Porção" com receitas 100% naturais de pré-treino e pós-treino (gengibre em pó, guaraná em pó, etc.) e avisos de saúde.
+- [x] Validar a nova aba, as cargas em kg e a responsividade mobile.
+- [x] Validar explicitamente a aba Porção e a bottom nav em viewport móvel com screenshot/check visual mobile após as mudanças.
