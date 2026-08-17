@@ -11,8 +11,11 @@ import {
   Dumbbell,
   Flame,
   Info,
+  Utensils,
   LockKeyhole,
   LogOut,
+  Maximize2,
+  Minimize2,
   Menu,
   Play,
   Plus,
@@ -44,6 +47,7 @@ import {
   getNextDay,
   getStreakAfterCompletion,
   isAdvancedUnlocked,
+  porcaoRecipes,
   type Exercise,
   type TrainingDay,
   type TrainingLevel,
@@ -57,7 +61,7 @@ import { createProgressPersistenceController } from "@/lib/progressPersistenceCo
 const PROFILE_KEY = "panoflow-profile-v1";
 const ACTIVE_DAY_KEY = "panoflow-active-day-v1";
 
-type Tab = "today" | "calendar" | "profile";
+type Tab = "today" | "calendar" | "portion" | "profile";
 
 type StoredProfile = TrainingProfile & { lastCompletedAt?: number };
 
@@ -143,17 +147,62 @@ function ExerciseRow({ exercise, completed, onToggle, onOpenVideo }: { exercise:
 }
 
 function VideoModal({ exercise, onClose }: { exercise: Exercise; onClose: () => void }) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else {
+        await modalRef.current?.requestFullscreen();
+      }
+    } catch {
+      // Some embedded browsers do not allow native fullscreen; the viewport modal remains immersive.
+    }
+  }
+
   return (
-    <div className="modal-backdrop" role="presentation" onClick={onClose}>
-      <div className="video-modal" role="dialog" aria-modal="true" aria-label={`Técnica: ${exercise.name}`} onClick={(event) => event.stopPropagation()}>
+    <div className="modal-backdrop modal-backdrop--video" role="presentation" onClick={onClose}>
+      <div ref={modalRef} className="video-modal video-modal--immersive" role="dialog" aria-modal="true" aria-label={`Técnica: ${exercise.name}`} onClick={(event) => event.stopPropagation()}>
         <div className="video-modal__head">
-          <div><span className="eyebrow">TUTORIAL EMBUTIDO</span><h2>{exercise.name}</h2></div>
-          <button type="button" className="icon-button" onClick={onClose} aria-label="Fechar tutorial"><X size={19} /></button>
+          <div><span className="eyebrow">TUTORIAL EMBUTIDO · TELA CHEIA</span><h2>{exercise.name}</h2></div>
+          <div className="video-modal__actions">
+            <button type="button" className="icon-button" onClick={() => { void toggleFullscreen(); }} aria-label="Expandir vídeo para tela cheia"><Maximize2 size={18} /></button>
+            <button type="button" className="icon-button" onClick={onClose} aria-label="Fechar tutorial"><X size={19} /></button>
+          </div>
         </div>
-        <div className="video-frame"><iframe src={`https://www.youtube.com/embed/${exercise.videoId}?rel=0&modestbranding=1`} title={exercise.videoTitle} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div>
+        <div className="video-frame video-frame--immersive"><iframe src={`https://www.youtube.com/embed/${exercise.videoId}?rel=0&modestbranding=1`} title={exercise.videoTitle} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen /></div>
         <p className="modal-note"><ShieldCheck size={16} /> Vídeo público de referência. Confirme o ajuste e a disponibilidade do aparelho com o professor da sua unidade.</p>
       </div>
     </div>
+  );
+}
+
+function PortionView() {
+  const [category, setCategory] = useState<"Todas" | "Pré-treino" | "Pós-treino">("Todas");
+  const visibleRecipes = category === "Todas" ? porcaoRecipes : porcaoRecipes.filter((recipe) => recipe.category === category);
+
+  return (
+    <section className="portion-page">
+      <div className="portion-hero">
+        <div>
+          <span className="eyebrow">PORÇÃO · COMBUSTÍVEL REAL</span>
+          <h1>Coma simples.<br /><span>Treine melhor.</span></h1>
+          <p>Receitas acessíveis com ingredientes naturais para acompanhar a sua rotina — sem promessas mágicas e sem complicar o prato.</p>
+        </div>
+        <div className="portion-hero__badge"><Utensils size={24} /><span>4 receitas<br /><strong>naturais</strong></span></div>
+      </div>
+      <div className="portion-filters" role="tablist" aria-label="Filtrar receitas">
+        {(["Todas", "Pré-treino", "Pós-treino"] as const).map((item) => <button key={item} type="button" role="tab" aria-selected={category === item} className={category === item ? "is-active" : ""} onClick={() => setCategory(item)}>{item}</button>)}
+      </div>
+      <div className="portion-grid">
+        {visibleRecipes.map((recipe) => <article className="recipe-card" key={recipe.id}>
+          <div className={`recipe-card__top recipe-card__top--${recipe.category === "Pré-treino" ? "pre" : "post"}`}><span>{recipe.category}</span><span>{recipe.timing}</span></div>
+          <div className="recipe-card__body"><div className="recipe-card__title"><h2>{recipe.title}</h2><Utensils size={18} /></div><div className="recipe-ingredients"><span className="eyebrow">INGREDIENTES</span>{recipe.ingredients.map((ingredient) => <span key={ingredient}><Check size={13} /> {ingredient}</span>)}</div><div className="recipe-preparation"><span className="eyebrow">COMO PREPARAR</span><p>{recipe.preparation}</p></div><div className="recipe-benefit"><Sparkles size={15} /><span>{recipe.benefits}</span></div></div>
+        </article>)}
+      </div>
+      <div className="portion-safety"><ShieldCheck size={22} /><div><strong>Segurança primeiro</strong><p>Guaraná em pó e gengibre não são obrigatórios. O guaraná contém cafeína: não combine com café, energéticos ou pré-treinos estimulantes. Evite se você tem hipertensão, arritmia, ansiedade, sensibilidade à cafeína, está grávida/amamentando ou usa medicamentos sem antes falar com um profissional. O PanoFlow não substitui nutricionista ou médico.</p></div></div>
+    </section>
   );
 }
 
@@ -324,6 +373,7 @@ export default function Home() {
         <nav className="side-nav" aria-label="Navegação principal">
           <button type="button" className={tab === "today" ? "is-active" : ""} onClick={() => { setTab("today"); setShowMenu(false); }}><Activity size={18} /> Treino de hoje</button>
           <button type="button" className={tab === "calendar" ? "is-active" : ""} onClick={() => { setTab("calendar"); setShowMenu(false); }}><CalendarDays size={18} /> Calendário <span className="nav-count">{totalCompleted}/60</span></button>
+          <button type="button" className={tab === "portion" ? "is-active" : ""} onClick={() => { setTab("portion"); setShowMenu(false); }}><Utensils size={18} /> Porção</button>
           <button type="button" className={tab === "profile" ? "is-active" : ""} onClick={() => { setTab("profile"); setShowMenu(false); }}><UserRound size={18} /> Meu perfil</button>
         </nav>
         <div className="sidebar-bottom">
@@ -342,10 +392,11 @@ export default function Home() {
             <section className="today-layout"><div className="workout-card"><div className="workout-card__head"><div><div className="day-kicker"><span className="day-number">{String(selectedDay).padStart(2, "0")}</span><span><span className="eyebrow">TREINO DO DIA</span><strong>{day.title}</strong></span></div><p>{day.focus} <span className="dot-separator">•</span> {day.duration} min <span className="dot-separator">•</span> {day.exercises.length} blocos</p></div><Pill tone={dayComplete ? "lime" : "orange"}>{dayComplete ? "Concluído" : `${completedCount}/${day.exercises.length}`}</Pill></div><div className="workout-tip"><Sparkles size={16} /><span>{day.note}</span></div><div className="exercise-list">{day.exercises.map((exercise) => <ExerciseRow key={exercise.id} exercise={exercise} completed={completedExercises.includes(exercise.id)} onToggle={() => toggleExercise(exercise.id)} onOpenVideo={() => setActiveVideo(exercise)} />)}</div><div className="workout-footer"><div className="completion-track"><div className="completion-track__label"><span>Progresso do treino</span><strong>{Math.round((completedCount / day.exercises.length) * 100)}%</strong></div><div className="track"><span style={{ width: `${(completedCount / day.exercises.length) * 100}%` }} /></div></div><button type="button" className="primary-cta" disabled={!dayComplete || (selectedLevel === "beginner" ? profile.completedBeginnerDays : profile.completedAdvancedDays).includes(selectedDay)} onClick={completeDay}>{(selectedLevel === "beginner" ? profile.completedBeginnerDays : profile.completedAdvancedDays).includes(selectedDay) ? <><Check size={18} /> Dia salvo</> : <>Concluir treino <ChevronRight size={18} /></>}</button></div></div><aside className="right-rail"><div className="next-card"><div className="next-card__head"><span className="eyebrow">PRÓXIMO PASSO</span><ChevronRight size={17} /></div><div className="next-day-number">{String(Math.min(30, selectedDay + 1)).padStart(2, "0")}</div><strong>{selectedDay === 30 ? "Ciclo completo" : "Amanhã, de novo"}</strong><p>{selectedDay === 30 ? "O próximo ciclo será liberado quando você concluir os 30 dias." : "O próximo treino desbloqueia quando o checklist de hoje estiver completo."}</p></div><div className="rest-card"><div className="rest-card__icon"><TimerReset size={20} /></div><div><span className="eyebrow">CRONÔMETRO</span><strong>{restSeconds ? `${Math.floor(restSeconds / 60)}:${String(restSeconds % 60).padStart(2, "0")}` : "Pronto para o próximo set"}</strong><small>{restSeconds ? "Respire. Controle. Volte forte." : "O descanso da série aparece aqui."}</small></div>{restSeconds > 0 && <button type="button" className="icon-button icon-button--small" onClick={() => setRestSeconds(0)} aria-label="Pular descanso"><Plus size={15} /></button>}</div><div className="safety-card"><ShieldCheck size={18} /><div><strong>Regra PanoFlow</strong><p>Sem dor aguda, sem pressa e sem ego. Se o aparelho variar na unidade, peça uma adaptação ao professor.</p></div></div></aside></section>
           </>}
           {tab === "calendar" && <CalendarView profile={profile} selectedLevel={selectedLevel} selectedDay={selectedDay} onSelectLevel={(level) => { setSelectedLevel(level); setSelectedDay(getNextDay(profile, level)); setTab("today"); }} onSelectDay={(dayNumber) => { setSelectedDay(dayNumber); setTab("today"); }} />}
+          {tab === "portion" && <PortionView />}
           {tab === "profile" && <section className="profile-page"><div className="profile-heading"><div className="profile-avatar">{avatar}</div><div><span className="eyebrow">PERFIL DO ATLETA</span><h1>{displayName}, vamos construir.</h1><p>{user ? "Sua conta está conectada." : "Modo demonstração: seus dados ficam salvos neste navegador."}</p></div></div><div className="profile-grid"><div className="profile-card"><div className="section-heading section-heading--compact"><div><span className="eyebrow">DADOS BASE</span><h2>Seu ponto de partida</h2></div><UserRound size={20} /></div><div className="body-metrics"><div><span>Altura</span><strong>{profile.heightCm} <small>cm</small></strong></div><div><span>Peso inicial</span><strong>{profile.weightKg} <small>kg</small></strong></div><div><span>Nível</span><strong>{levelLabel(currentLevel)}</strong></div></div><div className="profile-disclaimer"><Info size={15} /> Ajuste estes dados com um profissional. O PanoFlow não diagnostica nem prescreve.</div></div><div className="profile-card history-card"><div className="section-heading section-heading--compact"><div><span className="eyebrow">HISTÓRICO</span><h2>Últimas vitórias</h2></div><Trophy size={20} /></div>{profile.history.length ? <div className="history-list">{profile.history.slice(-5).reverse().map((entry, index) => <div className="history-item" key={`${entry.level}-${entry.day}-${entry.completedAt}`}><div className="history-icon"><Check size={15} /></div><div><strong>Dia {entry.day} · {levelLabel(entry.level)}</strong><span>{formatDate(entry.completedAt)} · +{entry.xp} XP</span></div><span className="history-index">#{profile.history.length - index}</span></div>)}</div> : <div className="empty-history"><Award size={28} /><p>Seu histórico começa no primeiro treino concluído.</p></div>}</div></div><div className="profile-actions"><div className="profile-actions__left"><button type="button" className="text-button" onClick={resetDemo}><RotateCcw size={15} /> Resetar progresso demo</button>{user && canRetryProgressSync(saveState) && <button type="button" className="text-button text-button--retry" onClick={() => { void retryPersistence(); }}><RotateCcw size={15} /> Tentar sincronizar</button>}</div><div className="profile-actions__right">{saveError && <span className="save-error"><AlertTriangle size={13} /> {saveError}</span>}{user && <button type="button" className="text-button text-button--muted" onClick={() => void logout()}><LogOut size={15} /> Sair</button>}</div></div></section>}
         </div>
       </main>
-      <nav className="bottom-nav" aria-label="Navegação móvel"><button type="button" className={tab === "today" ? "is-active" : ""} onClick={() => setTab("today")}><Activity size={19} /><span>Hoje</span></button><button type="button" className={tab === "calendar" ? "is-active" : ""} onClick={() => setTab("calendar")}><CalendarDays size={19} /><span>Calendário</span></button><button type="button" className={tab === "profile" ? "is-active" : ""} onClick={() => setTab("profile")}><UserRound size={19} /><span>Perfil</span></button></nav>
+      <nav className="bottom-nav" aria-label="Navegação móvel"><button type="button" className={tab === "today" ? "is-active" : ""} onClick={() => setTab("today")}><Activity size={19} /><span>Hoje</span></button><button type="button" className={tab === "calendar" ? "is-active" : ""} onClick={() => setTab("calendar")}><CalendarDays size={19} /><span>Calendário</span></button><button type="button" className={tab === "portion" ? "is-active" : ""} onClick={() => setTab("portion")}><Utensils size={19} /><span>Porção</span></button><button type="button" className={tab === "profile" ? "is-active" : ""} onClick={() => setTab("profile")}><UserRound size={19} /><span>Perfil</span></button></nav>
       {activeVideo && <VideoModal exercise={activeVideo} onClose={() => setActiveVideo(null)} />}
       {showSources && <div className="modal-backdrop" role="presentation" onClick={() => setShowSources(false)}><div className="sources-modal" role="dialog" aria-modal="true" aria-label="Fontes e segurança" onClick={(event) => event.stopPropagation()}><div className="video-modal__head"><div><span className="eyebrow">EDITORIAL</span><h2>Treino com contexto</h2></div><button type="button" className="icon-button" onClick={() => setShowSources(false)} aria-label="Fechar fontes"><X size={19} /></button></div><p>O catálogo combina princípios de progressão no treino resistido, atividade física e referências de comunidades. As discussões de fórum ajudam a entender dúvidas reais, mas não substituem avaliação profissional.</p><div className="sources-list">{editorialSources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}><span>{source.label}</span><ChevronRight size={16} /></a>)}</div><div className="source-warning"><ShieldCheck size={17} /><span>{appCopy.equipmentNote}</span></div></div></div>}
       {celebrate && <div className="celebration" role="status"><div className="celebration__burst"><Sparkles size={25} /></div><strong>Treino salvo!</strong><span>+{estimateDayXp(day)} XP · próximo dia liberado</span></div>}

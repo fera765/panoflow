@@ -72,28 +72,28 @@ export const equipmentLibrary = [
 
 const beginnerPatterns: Exercise[][] = [
   [
-    makeExercise("legpress", "Leg press 45°", "Leg press 45°", "Quadríceps e glúteos", 3, "10–12", 90, "leve, RPE 6", "Pé inteiro apoiado; joelhos acompanham a linha dos pés.", "legPress"),
-    makeExercise("chestpress", "Supino máquina", "Supino máquina", "Peito e tríceps", 3, "10–12", 90, "leve, RPE 6", "Ajuste o banco; mantenha escápulas estáveis e não trave os cotovelos.", "chestPress"),
-    makeExercise("pulldown", "Puxada frente", "Pulley", "Costas e bíceps", 3, "10–12", 90, "leve, RPE 6", "Puxe até a parte alta do peito sem balançar o tronco.", "pulldown"),
-    makeExercise("treadmill", "Caminhada inclinada", "Esteira", "Cardio", 1, "12 min", 0, "ritmo conversável", "Comece sem segurar nas barras; ajuste a velocidade com segurança.", "treadmill"),
+    makeExercise("legpress", "Leg press 45°", "Leg press 45°", "Quadríceps e glúteos", 3, "10–12", 90, "40 kg", "Pé inteiro apoiado; joelhos acompanham a linha dos pés.", "legPress"),
+    makeExercise("chestpress", "Supino máquina", "Supino máquina", "Peito e tríceps", 3, "10–12", 90, "20 kg", "Ajuste o banco; mantenha escápulas estáveis e não trave os cotovelos.", "chestPress"),
+    makeExercise("pulldown", "Puxada frente", "Pulley", "Costas e bíceps", 3, "10–12", 90, "25 kg", "Puxe até a parte alta do peito sem balançar o tronco.", "pulldown"),
+    makeExercise("treadmill", "Caminhada inclinada", "Esteira", "Cardio", 1, "12 min", 0, "velocidade 5 km/h", "Comece sem segurar nas barras; ajuste a velocidade com segurança.", "treadmill"),
   ],
   [
-    makeExercise("legcurl", "Cadeira flexora", "Cadeira flexora", "Posteriores", 3, "10–12", 75, "leve, RPE 6", "Alinhe o eixo da máquina ao joelho e controle a volta.", "legCurl"),
-    makeExercise("row", "Remada baixa", "Remada baixa", "Costas", 3, "10–12", 90, "leve, RPE 6", "Puxe com cotovelos e evite compensar com o tronco.", "row"),
-    makeExercise("shoulder", "Desenvolvimento sentado", "Máquina de ombros", "Ombros", 2, "10–12", 75, "leve, RPE 6", "Punhos alinhados e amplitude confortável, sem dor.", "shoulder"),
-    makeExercise("bike", "Bike moderada", "Bicicleta", "Cardio", 1, "12 min", 0, "ritmo conversável", "Mantenha cadência estável e ajuste o selim antes de começar.", "bike"),
+    makeExercise("legcurl", "Cadeira flexora", "Cadeira flexora", "Posteriores", 3, "10–12", 75, "20 kg", "Alinhe o eixo da máquina ao joelho e controle a volta.", "legCurl"),
+    makeExercise("row", "Remada baixa", "Remada baixa", "Costas", 3, "10–12", 90, "25 kg", "Puxe com cotovelos e evite compensar com o tronco.", "row"),
+    makeExercise("shoulder", "Desenvolvimento sentado", "Máquina de ombros", "Ombros", 2, "10–12", 75, "15 kg", "Punhos alinhados e amplitude confortável, sem dor.", "shoulder"),
+    makeExercise("bike", "Bike moderada", "Bicicleta", "Cardio", 1, "12 min", 0, "carga leve 2", "Mantenha cadência estável e ajuste o selim antes de começar.", "bike"),
   ],
   [
-    makeExercise("extension", "Cadeira extensora", "Cadeira extensora", "Quadríceps", 3, "12–15", 75, "leve, RPE 6", "Suba com controle e não bata o peso no final.", "extension"),
-    makeExercise("adductor", "Abdutora/adutora", "Cadeira abdutora/adutora", "Quadril", 2, "12–15", 60, "leve, RPE 6", "Movimente sem impulso e faça pausa curta na contração.", "adductor"),
-    makeExercise("crossover", "Crossover alto", "Crossover", "Peito", 2, "12–15", 60, "leve, RPE 6", "Costelas baixas e ombros longe das orelhas.", "crossover"),
-    makeExercise("treadmill", "Caminhada leve", "Esteira", "Cardio", 1, "15 min", 0, "ritmo confortável", "Use o clipe de segurança e progrida apenas se estiver confortável.", "treadmill"),
+    makeExercise("extension", "Cadeira extensora", "Cadeira extensora", "Quadríceps", 3, "12–15", 75, "25 kg", "Suba com controle e não bata o peso no final.", "extension"),
+    makeExercise("adductor", "Abdutora/adutora", "Cadeira abdutora/adutora", "Quadril", 2, "12–15", 60, "25 kg", "Movimente sem impulso e faça pausa curta na contração.", "adductor"),
+    makeExercise("crossover", "Crossover alto", "Crossover", "Peito", 2, "12–15", 60, "15 kg", "Costelas baixas e ombros longe das orelhas.", "crossover"),
+    makeExercise("treadmill", "Caminhada leve", "Esteira", "Cardio", 1, "15 min", 0, "velocidade 4.5 km/h", "Use o clipe de segurança e progrida apenas se estiver confortável.", "treadmill"),
   ],
   [
-    makeExercise("legpress", "Leg press 45°", "Leg press 45°", "Pernas", 3, "8–10", 105, "moderada, RPE 7", "Pare antes de perder a posição lombar; sem pressa na descida.", "legPress"),
-    makeExercise("row", "Remada baixa", "Remada baixa", "Costas", 3, "8–10", 105, "moderada, RPE 7", "Mantenha o peito aberto e controle a fase excêntrica.", "row"),
-    makeExercise("chestpress", "Supino máquina", "Supino máquina", "Peito", 3, "8–10", 105, "moderada, RPE 7", "Não transforme a série em teste de carga; técnica vem primeiro.", "chestPress"),
-    makeExercise("bike", "Bike intervalada leve", "Bicicleta", "Cardio", 1, "10 min", 0, "1 min leve / 1 min moderado", "Recupere se faltar ar; o objetivo é consistência.", "bike"),
+    makeExercise("legpress", "Leg press 45°", "Leg press 45°", "Pernas", 3, "8–10", 105, "60 kg", "Pare antes de perder a posição lombar; sem pressa na descida.", "legPress"),
+    makeExercise("row", "Remada baixa", "Remada baixa", "Costas", 3, "8–10", 105, "35 kg", "Mantenha o peito aberto e controle a fase excêntrica.", "row"),
+    makeExercise("chestpress", "Supino máquina", "Supino máquina", "Peito", 3, "8–10", 105, "30 kg", "Não transforme a série em teste de carga; técnica vem primeiro.", "chestPress"),
+    makeExercise("bike", "Bike intervalada leve", "Bicicleta", "Cardio", 1, "10 min", 0, "carga 3", "Recupere se faltar ar; o objetivo é consistência.", "bike"),
   ],
 ];
 
@@ -103,7 +103,7 @@ const advancedPatterns = beginnerPatterns.map((pattern) => pattern.map((item) =>
   ...item,
   sets: Math.min(item.sets + 1, 4),
   rest: item.rest ? item.rest + 15 : item.rest,
-  load: item.load.replace("leve", "moderada"),
+  load: item.load.includes("kg") ? `${parseInt(item.load, 10) + 15} kg` : item.load,
   cue: `${item.cue} Só aumente a carga quando completar o topo da faixa com técnica.`,
 })));
 
@@ -324,3 +324,71 @@ export const complete = true;
 export const ready = true;
 export const endOfModule = "PanoFlow";
 export const endOfFile = true;
+
+export type PorcaoRecipe = {
+  id: string;
+  title: string;
+  category: "Pré-treino" | "Pós-treino";
+  timing: string;
+  ingredients: string[];
+  preparation: string;
+  benefits: string;
+};
+
+export const porcaoRecipes: PorcaoRecipe[] = [
+  {
+    id: "pre-guarana-gengibre",
+    title: "Shot Energético Natural (Guaraná & Gengibre)",
+    category: "Pré-treino",
+    timing: "30 minutos antes do treino",
+    ingredients: [
+      "1/4 colher de chá de guaraná em pó (opcional)",
+      "1/2 colher de chá de gengibre em pó",
+      "200 ml de água gelada ou água de coco",
+      "Gotas de limão a gosto",
+    ],
+    preparation: "Misture vigorosamente o guaraná em pó e o gengibre em pó na água até dissolver por completo. Adicione limão para suavizar o sabor.",
+    benefits: "Pode oferecer estímulo por conter cafeína; a resposta varia entre pessoas e não é necessário usar para treinar bem.",
+  },
+  {
+    id: "pre-banana-cacau",
+    title: "Vitamina Energética de Banana com Cacau",
+    category: "Pré-treino",
+    timing: "45 a 60 minutos antes do treino",
+    ingredients: [
+      "1 banana madura",
+      "1 colher de sopa de cacau 100% em pó",
+      "200 ml de leite (ou bebida vegetal)",
+      "1 colher de sopa de aveia em flocos",
+    ],
+    preparation: "Bata todos os ingredientes no liquidificador até obter uma textura homogênea e cremosa.",
+    benefits: "Combina carboidratos e potássio em uma opção simples; ajuste a quantidade ao seu objetivo e à sua tolerância.",
+  },
+  {
+    id: "pos-ovos-aveia",
+    title: "Panqueca Proteica de Banana e Aveia",
+    category: "Pós-treino",
+    timing: "Até 1 hora após o treino",
+    ingredients: [
+      "2 ovos inteiros",
+      "1 banana amassada",
+      "3 colheres de sopa de aveia em flocos",
+      "Pitada de canela em pó",
+    ],
+    preparation: "Amasse a banana, misture com os ovos, a aveia e a canela. Despeje em frigideira antiaderente untada e doure dos dois lados.",
+    benefits: "Combina proteína e carboidratos em uma refeição prática para apoiar a recuperação após o treino.",
+  },
+  {
+    id: "pos-frango-mandioca",
+    title: "Refeição Sólida Pós-Treino (Frango & Mandioca)",
+    category: "Pós-treino",
+    timing: "No almoço ou jantar pós-treino",
+    ingredients: [
+      "120g de peito de frango grelhado desfiado",
+      "100g de mandioca (aipim) cozida",
+      "Salada verde a vontade com azeite de oliva extra virgem",
+    ],
+    preparation: "Grele o frango com temperos naturais, sirva acompanhado da mandioca cozida e regue a salada com azeite.",
+    benefits: "Combina proteína, carboidratos e vegetais em uma refeição completa; as quantidades devem ser individualizadas.",
+  },
+];
