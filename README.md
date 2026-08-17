@@ -6,7 +6,7 @@ PanoFlow é um acompanhamento local de treinos com visual All Black, calendário
 
 Este repositório é **100% estático**. Não possui servidor, banco, OAuth, tRPC, APIs próprias ou variáveis secretas. O progresso de perfil, XP, streak, histórico e preferências é salvo no `localStorage` do navegador. O botão de reset remove os dados locais e reinicia o ciclo.
 
-O workflow em `.github/workflows/deploy-pages.yml` compila `dist/` e publica automaticamente no GitHub Pages a cada push na branch `main`. O Vite calcula a base do projeto a partir de `GITHUB_REPOSITORY`; localmente, a base é `/`.
+A publicação usa uma branch `gh-pages` contendo o conteúdo compilado de `dist/`. No GitHub, configure **Settings → Pages → Deploy from a branch → gh-pages / root**. O Vite calcula a base do projeto a partir de `GITHUB_REPOSITORY`; localmente, a base é `/`.
 
 ## Desenvolvimento local
 

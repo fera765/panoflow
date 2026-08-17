@@ -52,3 +52,4 @@
 - [x] Ajustar o frontend para usar 100% localStorage sem depender de backend.
 - [x] Configurar build estático em vite.config.ts e verificar build de produção.
 - [ ] Criar repositório no GitHub via CLI `gh` e publicar arquivos estáticos.
+- [ ] Publicar o build estático em uma branch gh-pages e habilitar GitHub Pages via configuração legacy, evitando dependência de permissão de GitHub Actions workflows.
